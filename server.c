@@ -66,7 +66,7 @@ int main(int argc, char ** argv) {
     server_socket = socket(PF_INET, SOCK_STREAM, 0);
     addr.sin_family = AF_INET;
     addr.sin_port = htons(port);
-    addr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    addr.sin_addr.s_addr = INADDR_ANY;
     memset(addr.sin_zero, 0, sizeof(addr.sin_zero));
 
     int enable = 1;
