@@ -192,10 +192,10 @@ quit:
         if (in_shutdown == 0) { // double check (so as to avoid using an atomic flag)
             list_erase(clients, c->it);
             free(c);
-            printf("client disconnected\n");
         }
         pthread_mutex_unlock(&mutex);
     }
 
+    printf("client disconnected\n");
     return NULL;
 }
