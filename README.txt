@@ -1,5 +1,5 @@
 Compilation: `make` ou `make no_dir` (voir plus bas)
-Exécution: `./serv <path> <port>`
+Exécution: `./server <path> <port>`
 
 J'ai traité toutes les questions.
 

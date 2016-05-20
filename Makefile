@@ -1,6 +1,5 @@
 CC=clang
 CFLAGS=-pthread -Wall
-BIN=serv
 
 SRC= $(wildcard *.c)
 OBJ= $(patsubst %.c, obj/%.o, $(SRC))
