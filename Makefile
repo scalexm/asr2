@@ -1,5 +1,5 @@
 CC=clang
-CFLAGS=-pthread -Wall -std=c11
+CFLAGS=-pthread -Wall
 BIN=serv
 
 SRC= $(wildcard *.c)

@@ -10,7 +10,6 @@
 #include <sys/stat.h>
 #include <sys/select.h>
 #include <fcntl.h>
-#include <signal.h>
 #include <dirent.h>
 
 // cannot use signalfd on Mac OS
