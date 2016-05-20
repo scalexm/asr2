@@ -42,11 +42,12 @@ void server_kill() {
 }
 
 int main(int argc, char ** argv) {
-    main_thread = pthread_self();
-    /*if (argc < 3)
-        return -1;*/
+    if (argc < 3)
+        return -1;
 
-    // path = argv[1];
+    main_thread = pthread_self();
+
+    path = argv[1];
     struct stat st;
     if (stat(path, &st) != 0) {
         printf("`%s` does not exist", path);
@@ -63,7 +64,7 @@ int main(int argc, char ** argv) {
 
     clients = list_new();
 
-    int port = 2223;//atoi(argv[2]);
+    int port = atoi(argv[2]);
     struct sockaddr_in addr;
     server_socket = socket(PF_INET, SOCK_STREAM, 0);
     addr.sin_family = AF_INET;

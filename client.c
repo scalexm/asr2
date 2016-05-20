@@ -8,7 +8,9 @@
 #include <signal.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 #include <signal.h>
+#include <dirent.h>
 
 // cannot use signalfd on Mac OS
 #ifndef __APPLE__
@@ -23,6 +25,7 @@ extern int in_shutdown;
 extern pthread_mutex_t mutex;
 extern list_t * clients;
 extern pthread_t main_thread;
+extern char * path;
 
 typedef struct command {
     char * cmd;
@@ -36,10 +39,7 @@ int command_quit(client_t * c, char * arg) {
 int command_clients(client_t * c, char * arg) {
     size_t size = list_size(clients);
     char buffer[BUFSIZE];
-    if (size != 1)
-        snprintf(buffer, BUFSIZE, "%zu clients connected\n", size);
-    else
-        snprintf(buffer, BUFSIZE, "1 client connected\n");
+    snprintf(buffer, BUFSIZE, "%zu\n", size);
     write(c->socket, buffer, strlen(buffer));
     return 0;
 }
@@ -54,7 +54,7 @@ int command_size(client_t * c, char * arg) {
             if (S_ISDIR(st.st_mode))
                 snprintf(buffer, BUFSIZE, "requested file is a directory");
             else
-                snprintf(buffer, BUFSIZE, "file weight: %zio\n", st.st_size);
+                snprintf(buffer, BUFSIZE, "%zi\n", st.st_size);
         } else
             snprintf(buffer, BUFSIZE, "cannot find requested file\n");
     }
@@ -64,10 +64,60 @@ int command_size(client_t * c, char * arg) {
 }
 
 int command_get(client_t * c, char * arg) {
+    int fd = open(arg, O_RDONLY);
+    char buffer[BUFSIZE];
+
+    if (fd < 0) {
+        snprintf(buffer, BUFSIZE, "cannot open file\n");
+        write(c->socket, buffer, strlen(buffer));
+        return 0;
+    }
+
+    char reader[BUFSIZE * 16];
+    ssize_t len;
+
+    while ((len = read(fd, reader, sizeof reader)) >= 0) {
+        write(c->socket, reader, len);
+        if (len < sizeof reader)
+            break;
+    }
+
+    close(fd);
     return 0;
 }
 
 int command_list(client_t * c, char * arg) {
+    char old_path[BUFSIZE];
+    if (arg != NULL) {
+        getcwd(old_path, BUFSIZE);
+        if (chdir(arg) < 0) {
+            char buffer[BUFSIZE];
+            snprintf(buffer, BUFSIZE, "cannot find directory\n\n");
+            write(c->socket, buffer, strlen(buffer));
+            return 0;
+        }
+    }
+
+    char folder[BUFSIZE];
+    getcwd(folder, BUFSIZE);
+    DIR * dir = opendir(folder);
+    if (dir == NULL)
+        return 0;
+
+    struct dirent * file;
+    while((file = readdir(dir))) {
+        if (file->d_name[0] != '.') {
+            char buffer[BUFSIZE];
+            snprintf(buffer, BUFSIZE, "%s\n", file->d_name);
+            write(c->socket, buffer, strlen(buffer));
+        }
+    }
+    write(c->socket, "\n", 1);
+
+    closedir(dir);
+    if (arg != NULL)
+        chdir(old_path);
+
     return 0;
 }
 
