@@ -49,8 +49,8 @@ int command_size(client_t * c, char * arg) {
     else {
         struct stat st;
         if (stat(arg, &st) == 0) {
-            if (S_ISDIR(sb.st_mode))
-                snprintf(buffer, BUFFSIZE, "requested file is a directory");
+            if (S_ISDIR(st.st_mode))
+                snprintf(buffer, BUFSIZE, "requested file is a directory");
             else
                 snprintf(buffer, BUFSIZE, "file weight: %zio\n", st.st_size);
         } else

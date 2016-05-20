@@ -45,11 +45,11 @@ int main(int argc, char ** argv) {
         return -1;*/
 
     // path = argv[1];
-    struct stat sb;
-    if (stat(path, &sb) != 0) {
+    struct stat st;
+    if (stat(path, &st) != 0) {
         printf("`%s` does not exist", path);
         return -1;
-    } else if (!S_ISDIR(sb.st_mode)) {
+    } else if (!S_ISDIR(st.st_mode)) {
         printf("`%s` is not a directory", path);
         return -1;
     }
