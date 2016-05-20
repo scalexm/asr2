@@ -52,7 +52,7 @@ int command_size(client_t * c, char * arg) {
         struct stat st;
         if (stat(arg, &st) == 0) {
             if (S_ISDIR(st.st_mode))
-                snprintf(buffer, BUFSIZE, "requested file is a directory");
+                snprintf(buffer, BUFSIZE, "requested file is a directory\n");
             else
                 snprintf(buffer, BUFSIZE, "%zi\n", st.st_size);
         } else
@@ -68,7 +68,7 @@ int command_get(client_t * c, char * arg) {
     char buffer[BUFSIZE];
 
     if (fd < 0) {
-        snprintf(buffer, BUFSIZE, "cannot open file\n");
+        snprintf(buffer, BUFSIZE, "cannot open requested file\n");
         write(c->socket, buffer, strlen(buffer));
         return 0;
     }
@@ -92,7 +92,7 @@ int command_list(client_t * c, char * arg) {
         getcwd(old_path, BUFSIZE);
         if (chdir(arg) < 0) {
             char buffer[BUFSIZE];
-            snprintf(buffer, BUFSIZE, "cannot find directory\n\n");
+            snprintf(buffer, BUFSIZE, "cannot find requested directory\n\n");
             write(c->socket, buffer, strlen(buffer));
             return 0;
         }
@@ -107,9 +107,15 @@ int command_list(client_t * c, char * arg) {
     struct dirent * file;
     while((file = readdir(dir))) {
         if (file->d_name[0] != '.') {
+#ifdef NO_DIRECTORY
+        if (file->d_type != DT_DIR) {
+#endif
             char buffer[BUFSIZE];
             snprintf(buffer, BUFSIZE, "%s\n", file->d_name);
             write(c->socket, buffer, strlen(buffer));
+#ifdef NO_DIRECTORY
+        }
+#endif
         }
     }
     write(c->socket, "\n", 1);
