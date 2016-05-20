@@ -10,8 +10,8 @@ all: $(OBJ)
 clean:
 	rm -f *~ obj/*.o
 
-nodir:
-	CFLAGS += -DNO_DIRECTORY
+nodir: CFLAGS += -DNO_DIRECTORY
+nodir: all
 
 obj/%.o: %.c
 	$(CC) -o $@ -c $< $(CFLAGS)
