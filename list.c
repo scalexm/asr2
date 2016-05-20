@@ -2,17 +2,17 @@
 #include <stdlib.h>
 #include <assert.h>
 
-typedef struct iterator {
+struct iterator {
     void * data;
     struct iterator * prev;
     struct iterator * next;
-} iterator_t;
+};
 
-typedef struct list {
+struct list {
     size_t size;
     iterator_t * begin;
     iterator_t * end;
-} list_t;
+};
 
 list_t * list_new() {
     list_t * l = malloc(sizeof(list_t));
