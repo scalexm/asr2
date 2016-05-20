@@ -8,6 +8,7 @@
 #include <signal.h>
 #include <errno.h>
 #include <sys/stat.h>
+#include <signal.h>
 
 // cannot use signalfd on Mac OS
 #ifndef __APPLE__
@@ -21,6 +22,7 @@
 extern int in_shutdown;
 extern pthread_mutex_t mutex;
 extern list_t * clients;
+extern pthread_t main_thread;
 
 typedef struct command {
     char * cmd;
@@ -69,12 +71,18 @@ int command_list(client_t * c, char * arg) {
     return 0;
 }
 
+int command_shutdown(client_t * c, char * arg) {
+    pthread_kill(main_thread, SIGINT);
+    return 0;
+}
+
 static command_t commands[] = {
     { "quit", command_quit },
     { "clients", command_clients },
     { "size", command_size },
     { "get", command_get },
     { "list", command_list },
+    { "shutdown", command_shutdown },
     { NULL, NULL }
 };
 

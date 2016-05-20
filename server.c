@@ -22,6 +22,7 @@ list_t * clients;
 int server_socket = -1;
 int in_shutdown = 0;
 char * path = "./";
+pthread_t main_thread;
 
 void server_kill() {
     printf("shutdown\n");
@@ -41,6 +42,7 @@ void server_kill() {
 }
 
 int main(int argc, char ** argv) {
+    main_thread = pthread_self();
     /*if (argc < 3)
         return -1;*/
 
