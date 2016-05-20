@@ -1,37 +1,18 @@
 CC=clang
-LDFLAGS=
 CFLAGS=-pthread -Wall -std=c11
-LD=clang
 BIN=serv
 
-SRCDIR=.
-TMPDIR=obj
-OBJDIR=$(TMPDIR)
+SRC= $(wildcard *.c)
+OBJ= $(patsubst %.c, obj/%.o, $(SRC))
 
-SRCS=$(wildcard $(SRCDIR)/*.c)
-OBJS = $(SRCS:$(SRCDIR)/%.c=$(OBJDIR)/%.o)
-DEPS = $(OBJS:%.o=%.d)
-
-all: $(BIN)
-
-$(BIN): $(OBJS)
-	$(LD) -o $@ $^ $(CFLAGS) $(LIB)
-
-$(OBJDIR)/%.o: $(SRCDIR)/%.c
-	$(CC) $(CFLAGS) -o $@ -c $<
-
-$(TMPDIR)/%.d: $(SRCDIR)/%.c
-	$(CC) -MM -MT $(OBJDIR)/$*.o -o $@ $<
-
--include $(DEPS)
-
-.PHONY: clean distclean
+all: $(OBJ)
+	$(CC) $(CFLAGS) -o server $^
 
 clean:
-	rm -f $(OBJS) $(DEPS)
-
-distclean: clean
-	rm -rf $(BIN)
+	rm -f *~ obj/*.o
 
 nodir:
 	CFLAGS += -DNO_DIRECTORY
+
+obj/%.o: %.c
+	$(CC) -o $@ -c $< $(CFLAGS)
