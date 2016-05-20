@@ -3,12 +3,12 @@
 
 #include <pthread.h>
 
-typedef struct iterator iterator_t;
+struct iterator;
 
 typedef struct client {
     int socket;
     pthread_t thread;
-    iterator_t * it;
+    struct iterator * it;
 } client_t;
 
 void * client_thread(void *);

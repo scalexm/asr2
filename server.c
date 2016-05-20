@@ -49,19 +49,19 @@ int main(int argc, char ** argv) {
     path = argv[1];
     struct stat st;
     if (stat(path, &st) != 0) {
-        printf("`%s` does not exist", path);
+        printf("`%s` does not exist\n", path);
         return -1;
     } else if (!S_ISDIR(st.st_mode)) {
-        printf("`%s` is not a directory", path);
+        printf("`%s` is not a directory\n", path);
         return -1;
     }
+
+    clients = list_new();
 
     if (chdir(path) != 0) {
         HANDLE_ERROR("chdir");
         return -1;
     }
-
-    clients = list_new();
 
     int port = atoi(argv[2]);
     struct sockaddr_in addr;
